@@ -18,7 +18,7 @@ Example toml config file. Should be placed at `/etc/slendmail.conf`
 ```toml
 # best to quote all the strings below. I don't think it's strictly necessary
 # but I had weird issues with the go-toml library otherwise
-slack_token = "xoxb-123456789012-12345678901234-l;iqwjecacwiejfQWERoifqjwQWE"
+slack_token = "xoxb-123456789012-12345678901234-l;iqwjecacwiejfQWERoifqjwQWE"  # gitleaks:allow this isn't a real token
 channel = "#notifications-cron"
 ```
 

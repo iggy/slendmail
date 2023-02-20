@@ -1,5 +1,5 @@
 ---
-name: Tests
+name: MegaLinter
 "on": [push]
 
 jobs:
@@ -19,3 +19,5 @@ jobs:
           DISABLE_LINTERS: SPELL_CSPELL
           GO_GOLANGCI_LINT_CLI_LINT_MODE: project
           GO_REVIVE_CLI_LINT_MODE: project
+          # yes, I did put a fake slack token in my code... get over it
+          REPOSITORY_SECRETLINT_DISABLE_ERRORS: true
