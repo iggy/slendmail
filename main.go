@@ -1,3 +1,4 @@
+// Binary slendmail - see README.md
 package main
 
 import (
@@ -12,6 +13,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// Config - toml config struct
 type Config struct {
 	SlackToken string `toml:"slack_token"`
 	Channel    string
@@ -83,6 +85,6 @@ func main() {
 		log.Fatal("failed to post message ", err)
 	}
 
-	sl.Debug(fmt.Sprintf("channel: %s - ts: %s - argv: %v", msgchan, msgts, os.Args))
-	sl.Debug(string(stdin))
+	sl.Debug(fmt.Sprintf("channel: %s - ts: %s - argv: %v", msgchan, msgts, os.Args)) //nolint:errcheck
+	sl.Debug(string(stdin))                                                           //nolint:errcheck
 }
