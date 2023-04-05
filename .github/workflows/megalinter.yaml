@@ -2,6 +2,10 @@
 name: MegaLinter
 "on": [push]
 
+# checkov complains about the default, we don't need more for now, but if we ever want megalinter
+# to fix things for us, we'll have to revisit
+permissions: read-all
+
 jobs:
   mega-lint:
     name: Mega Linter

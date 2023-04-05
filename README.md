@@ -26,6 +26,7 @@ channel = "#notifications-cron"
 
 * More compatibility
 * Look for config in more/configurable places
+* config docs (the slack side)
 
 ## Extra Info
 

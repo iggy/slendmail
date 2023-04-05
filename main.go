@@ -25,8 +25,6 @@ func main() {
 	var body []string
 	var config Config
 
-	api := slack.New(config.SlackToken)
-
 	// set a default for syslogtag
 	config.SyslogTag = "slendmail"
 
@@ -39,6 +37,8 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to unmarshal config file ", err)
 	}
+
+	api := slack.New(config.SlackToken)
 
 	// setup syslogger, we use this instead of regular output so we can see the output in the
 	// case of being called from crond
