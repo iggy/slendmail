@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Mega Linter
-        uses: megalinter/megalinter/flavors/go@v7.2.1
+        uses: megalinter/megalinter/flavors/go@v7.3.0
         env:
           # VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           # Validates all source when push on main, else just the git diff with main.
