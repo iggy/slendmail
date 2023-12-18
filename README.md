@@ -1,5 +1,7 @@
 # Slendmail
 
+A portmanteau of slack and sendmail
+
 ## sendmail meets slack
 
 A cron compatible sendmail alternative that sends messages to slack instead of
@@ -21,6 +23,9 @@ Example toml config file. Should be placed at `/etc/slendmail.conf`
 slack_token = "xoxb-123456789012-12345678901234-l;iqwjecacwiejfQWERoifqjwQWE"  # gitleaks:allow this isn't a real token
 channel = "#notifications-cron"
 ```
+
+Alpine: Add `MAILTO` to /etc/crontabs/root
+Ubuntu: Add `MAILTO` to /etc/crontab
 
 ## TODO
 

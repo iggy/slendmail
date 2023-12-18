@@ -2,12 +2,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"log/syslog"
+	"net/mail"
 	"os"
-	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 	"github.com/slack-go/slack"
@@ -21,8 +22,6 @@ type Config struct {
 }
 
 func main() {
-	var subject string
-	var body []string
 	var config Config
 
 	// set a default for syslogtag
@@ -44,6 +43,7 @@ func main() {
 	// case of being called from crond
 	sl, err := syslog.New(syslog.LOG_WARNING|syslog.LOG_MAIL, config.SyslogTag)
 	if err != nil {
+		_ = sl.Err(fmt.Sprintln("failed to setup syslog connection ", err))
 		log.Fatal("failed to setup syslog connection ", err)
 	}
 
@@ -52,39 +52,48 @@ func main() {
 	// callers. So far only tested with busybox/Alpine crond
 	stdin, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		log.Fatal("failed to read anything from stdin ", err)
+		// this really shouldn't fail
+		log.Fatal("failed to read stdin", err)
 	}
-	lines := strings.Split(string(stdin), "\n")
-	for n, line := range lines {
-		if strings.HasPrefix(line, "Subject: ") {
-			subject = strings.SplitAfterN(line, " ", 2)[1]
-		}
-		if line == "" {
-			body = lines[n:]
-			break
-		}
+	_ = sl.Debug(string(stdin))
+	msg, err := mail.ReadMessage(bytes.NewReader(stdin))
+	if err != nil {
+		_ = sl.Err(fmt.Sprintln("failed to read stdin email format ", err))
+		log.Fatal("failed to read stdin email format", err)
+	}
+	body, err := io.ReadAll(msg.Body)
+	if err != nil {
+		_ = sl.Err(fmt.Sprintln("failed to read email body ", err))
+		log.Fatal("failed to read  email body", err)
 	}
 
 	// setup slack message
+	attach := new(slack.Attachment)
+	attach.Text = string(body)
+	hostname, _ := os.Hostname()
+	subjText := slack.NewTextBlockObject("mrkdwn", "*Subject:* "+msg.Header.Get("Subject"), false, false)
+	hostText := slack.NewTextBlockObject("mrkdwn", "*Hostname:* "+hostname, false, false)
+	hdrBlock := make([]*slack.TextBlockObject, 0)
+	hdrBlock = append(hdrBlock, subjText)
+	hdrBlock = append(hdrBlock, hostText)
 	smsg := slack.MsgOptionBlocks(
 		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", "*Subject:* "+subject, false, false), nil, nil,
+			nil,
+			hdrBlock,
+			nil,
 		),
-		slack.NewDividerBlock(),
-		slack.NewSectionBlock(
-			slack.NewTextBlockObject("mrkdwn", strings.Join(body, "\n"), false, false), nil, nil,
-		),
-		slack.NewDividerBlock(),
 	)
 
 	msgchan, msgts, err := api.PostMessage(
 		config.Channel,
 		smsg,
+		slack.MsgOptionAttachments(*attach),
 	)
 	if err != nil {
+		_ = sl.Err(fmt.Sprintln("failed to post message ", err))
+		log.Println("body", string(body))
 		log.Fatal("failed to post message ", err)
 	}
 
-	sl.Debug(fmt.Sprintf("channel: %s - ts: %s - argv: %v", msgchan, msgts, os.Args)) //nolint:errcheck
-	sl.Debug(string(stdin))                                                           //nolint:errcheck
+	_ = sl.Debug(fmt.Sprintf("channel: %s - ts: %s - argv: %v", msgchan, msgts, os.Args)) //nolint:errcheck
 }
