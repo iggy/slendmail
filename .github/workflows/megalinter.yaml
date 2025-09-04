@@ -4,7 +4,10 @@ name: MegaLinter
 
 # checkov complains about the default, we don't need more for now, but if we ever want megalinter
 # to fix things for us, we'll have to revisit
-permissions: read-all
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   mega-lint:
@@ -21,6 +24,8 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_LINTERS: SPELL_CSPELL
+          # TODO this is currently broken because of a bug in megalinter
+          DISABLE_ERRORS_LINTERS: GO_GOLANGCI_LINT
           # GO_GOLANGCI_LINT_CLI_LINT_MODE: project
           GO_REVIVE_CLI_LINT_MODE: project
           # yes, I did put a fake slack token in my code... get over it
