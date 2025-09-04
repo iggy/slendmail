@@ -21,6 +21,8 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_LINTERS: SPELL_CSPELL
+          # TODO this is currently broken because of a bug in megalinter
+          DISABLE_LINTERS_ERRORS: GO_GOLANGCI_LINT
           # GO_GOLANGCI_LINT_CLI_LINT_MODE: project
           GO_REVIVE_CLI_LINT_MODE: project
           # yes, I did put a fake slack token in my code... get over it
