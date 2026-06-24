@@ -3,7 +3,7 @@ module github.com/iggy/slendmail
 go 1.25
 
 require (
-	github.com/pelletier/go-toml/v2 v2.4.0
+	github.com/pelletier/go-toml/v2 v2.4.2
 	github.com/slack-go/slack v0.26.0
 )
 
